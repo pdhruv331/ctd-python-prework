@@ -1,3 +1,10 @@
+"""Country Explorer CLI entry point.
+
+This file owns everything the user sees: the menu, the input prompts, and
+the table output. Fetching and parsing live in countryapi.py so each file
+has one job.
+"""
+
 from countryapi import fetch_country, fetch_by_region, parse_countries
 
 
@@ -39,7 +46,7 @@ def get_region():
         return []
 
     countries = parse_countries(fetch_by_region(region))
-    countries.reverse()
+    countries.reverse()  # API sorts ascending; show largest population first
     if not countries:
         print(f"No countries found for region '{region}'.")
     return countries
@@ -105,6 +112,7 @@ def main():
         else:
             # Anything else (letters, numbers, blank) loops back to the menu.
             print("Invalid choice, try again.")
+
 
 if __name__ == "__main__":
     main()
