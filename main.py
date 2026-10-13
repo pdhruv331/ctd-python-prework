@@ -78,9 +78,22 @@ def display_table(countries):
         print(row_line)
 
 def main():
-    countries = get_country()
-    if countries:
-        display_table(countries)
+    """Show the menu until the user quits."""
+    while True:
+        print("\n1. Search country by name")
+        print("q. Quit")
+        choice = input("Choose: ").strip().lower()
+
+        if choice == "1":
+            countries = get_country()
+            if countries:  # skip the table when there's nothing to show
+                display_table(countries)
+        elif choice == "q":
+            print("Goodbye.")
+            break
+        else:
+            # Anything else (letters, numbers, blank) loops back to the menu.
+            print("Invalid choice, try again.")
 
 if __name__ == "__main__":
     main()
