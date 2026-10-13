@@ -33,4 +33,30 @@ def fetch_country(name):
         print(f"Network error: {err}")
         return []
 
-print(fetch_country("united states of america"))
+
+def parse_country(raw_data):
+    """Flatten one raw API record into a small dict of the fields we display.
+
+    Every lookup uses .get() with a default because some records are missing
+    keys (5 have no capital, 10 have no area).
+    """
+    # `languages` is a list of dicts like {"name": "Pashto", ...};
+    # pull out just the names, defaulting to an empty list if absent.
+
+    languages = []
+    for lang in raw_data.get("languages", []):
+        languages.append(lang.get("name", ""))
+
+    return {
+        "name": raw_data.get("name", "N/A"),
+        "capital": raw_data.get("capital", "N/A"),
+        "region": raw_data.get("region", "N/A"),
+        "population": raw_data.get("population", 0),
+        "area": raw_data.get("area", 0),
+        "languages": ", ".join(languages),
+    }
+
+
+def parse_countries(raw_list):
+    """Apply parse_country to every record in the API response."""
+    return [parse_country(country) for country in raw_list]
