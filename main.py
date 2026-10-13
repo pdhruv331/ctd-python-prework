@@ -1,4 +1,4 @@
-from countryapi import fetch_country, parse_countries
+from countryapi import fetch_country, fetch_by_region, parse_countries
 
 
 def get_country():
@@ -17,17 +17,6 @@ def get_country():
         print(f"No country found matching '{name}'.")
     return countries
 
-    
-# (key in the parsed dict, column width in characters)
-COLUMNS = [
-    ("name", 32),
-    ("capital", 18),
-    ("region", 10),
-    ("population", 14),
-    ("area", 12),
-    ("languages", 24),
-]
-
 
 # Table layout: one entry per column, in the order they should appear.
 # Each entry is (dict key to read from a parsed country, column width in
@@ -40,6 +29,20 @@ TABLE_COLUMNS = [
     ("area", 12),
     ("languages", 24),
 ]
+
+
+def get_region():
+    """Prompt for a region, fetch and parse its countries, return a list."""
+    region = input("Enter a region (Africa, Americas, Asia, Europe, Oceania): ").strip()
+    if not region:
+        print("Please enter a region.")
+        return []
+
+    countries = parse_countries(fetch_by_region(region))
+    countries.reverse()
+    if not countries:
+        print(f"No countries found for region '{region}'.")
+    return countries
 
 
 def display_table(countries):
@@ -77,16 +80,24 @@ def display_table(countries):
 
         print(row_line)
 
+
 def main():
     """Show the menu until the user quits."""
     while True:
         print("\n1. Search country by name")
+        print("2. List countries in a region")
         print("q. Quit")
+
         choice = input("Choose: ").strip().lower()
 
         if choice == "1":
             countries = get_country()
             if countries:  # skip the table when there's nothing to show
+                display_table(countries)
+        elif choice == "2":
+            countries = get_region()
+            if countries:
+                print(f"\n{len(countries)} countries, sorted by population:")
                 display_table(countries)
         elif choice == "q":
             print("Goodbye.")

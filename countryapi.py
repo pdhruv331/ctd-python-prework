@@ -1,7 +1,7 @@
 """Fetch and parse country data from the countries.dev API.
 
 This module talks to the network and cleans up the raw JSON.
-It never prints results; that is display.py's job.
+It never prints results; that is main.py's job.
 """
 
 import requests
@@ -30,6 +30,25 @@ def fetch_country(name):
         return []
     except requests.exceptions.RequestException as err:
         # Covers DNS failure, no internet, timeouts, etc.
+        print(f"Network error: {err}")
+        return []
+
+
+def fetch_by_region(region, sort="population"):
+    """Return all countries in `region`, sorted by the given field.
+
+    Valid regions: Africa, Americas, Asia, Europe, Oceania.
+    Returns an empty list on a 404 (unknown region) or network failure.
+    """
+    request_url = f"{BASE_URL}/region/{region.strip().lower()}"
+    try:
+        # `params` becomes ?sort=<sort> on the URL; requests encodes it.
+        response = requests.get(request_url, params={"sort": sort}, timeout=10)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.HTTPError:
+        return []
+    except requests.exceptions.RequestException as err:
         print(f"Network error: {err}")
         return []
 
